@@ -58,24 +58,6 @@ def principal_component_analysis_numpy_svd(data):
             'transformed_data': transformed_data}
 
 
-pca_output_sk = principal_component_analysis_sklearn(X_df, n_components=len(X_df.columns))
-pca_output_np = principal_component_analysis_numpy_svd(X)
-
-
-# validate different functions
-# print(pca_output_sk['variance_explained_ratio'])
-# print(pca_output_np['variance_explained_ratio'])
-#
-# print(pca_output_sk['singular_values'])
-# print(pca_output_np['singular_values'])
-#
-# print(pca_output_sk['principal_components'])
-# print(pca_output_np['principal_components'])
-#
-# print(pd.DataFrame(pca_output_sk['transformed_data']).head())
-# print(pd.DataFrame(pca_output_np['transformed_data']).head())
-
-
 def plot_scree_cumsum_visual(pca_output):
     """ plot scree and cumulative sum from pca function output"""
     import matplotlib.pyplot as plt
@@ -102,5 +84,24 @@ def plot_scree_cumsum_visual(pca_output):
     plt.show()
 
 
+# perform pca / svd
+pca_output_sk = principal_component_analysis_sklearn(X_df, n_components=len(X_df.columns))
+pca_output_np = principal_component_analysis_numpy_svd(X)
+
+# validate different functions
+print(pca_output_sk['variance_explained_ratio'])
+print(pca_output_np['variance_explained_ratio'])
+
+print(pca_output_sk['singular_values'])
+print(pca_output_np['singular_values'])
+
+print(pca_output_sk['principal_components'])
+print(pca_output_np['principal_components'])
+
+print(pd.DataFrame(pca_output_sk['transformed_data']).head())
+print(pd.DataFrame(pca_output_np['transformed_data']).head())
+
+# plot scree and cumulative sum plots
 plot_scree_cumsum_visual(pca_output_sk)
 plot_scree_cumsum_visual(pca_output_np)
+
