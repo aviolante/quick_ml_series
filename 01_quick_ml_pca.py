@@ -1,7 +1,20 @@
+"""
+
+This script, within each function, gives a step by step approach to do PCA using sklearn
+or to do it manually with numpy svd. I've wrapped the steps in functions for ease of use,
+but it could easily be split out or put into some pipeline if desired.
+
+"""
+
+# import libraries
 from sklearn.datasets import load_boston
 import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
 
-# ------------- LOAD DATA ------------- #
+# load data as array and pandas df
 # arrays
 boston = load_boston()
 X = boston.data
@@ -12,11 +25,9 @@ X_df = pd.DataFrame(X, columns=boston.feature_names)
 X_df.head()
 
 
+# helper functions for pca (numpy and pandas) and plotting scree / cumsum
 def principal_component_analysis_sklearn(data, n_components=1):
     """ PCA with SVD under the hood using sklearn library """
-    from sklearn.preprocessing import StandardScaler
-    from sklearn.decomposition import PCA
-
     data_std = StandardScaler().fit_transform(data)
 
     pca = PCA(n_components=n_components)
@@ -36,8 +47,6 @@ def principal_component_analysis_sklearn(data, n_components=1):
 
 def principal_component_analysis_numpy_svd(data):
     """ pca using numpy svd and making the transformation """
-    import numpy as np
-
     # standardize data
     data_std = (X - np.mean(X, axis=0)) / np.std(X, axis=0)
 
@@ -60,9 +69,6 @@ def principal_component_analysis_numpy_svd(data):
 
 def plot_scree_cumsum_visual(pca_output):
     """ plot scree and cumulative sum from pca function output"""
-    import matplotlib.pyplot as plt
-    import numpy as np
-
     pc_num = len(pca_output['singular_values'])
     pc_values = np.arange(pc_num) + 1
 
@@ -88,7 +94,7 @@ def plot_scree_cumsum_visual(pca_output):
 pca_output_sk = principal_component_analysis_sklearn(X_df, n_components=len(X_df.columns))
 pca_output_np = principal_component_analysis_numpy_svd(X)
 
-# validate different functions
+# validate and compare different functions output
 print(pca_output_sk['variance_explained_ratio'])
 print(pca_output_np['variance_explained_ratio'])
 
