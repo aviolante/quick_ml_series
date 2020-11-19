@@ -30,7 +30,7 @@ X_df.head()
 
 # helper functions for pca (numpy and pandas) and plotting scree / cumsum
 def principal_component_analysis_sklearn(data, n_components=1):
-    """ PCA with SVD under the hood using sklearn library """
+    """ pca with svd under the hood using sklearn library """
     data_std = StandardScaler().fit_transform(data)
 
     # fit pca on data using sklearn
