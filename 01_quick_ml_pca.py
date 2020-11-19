@@ -1,8 +1,11 @@
 """
 
 This script, within each function, gives a step by step approach to do PCA using sklearn
-or to do it manually with numpy svd. I've wrapped the steps in functions for ease of use,
-but it could easily be split out or put into some pipeline if desired.
+('principal_component_analysis_sklearn') or to do it manually with numpy svd
+('principal_component_analysis_numpy_svd'). I've wrapped the steps in functions for ease
+of use, but it could easily be split out or put into some pipeline if desired. I've also
+included a function ('plot_scree_cumsum_visual') to produce 2-plots: scree and cumulative
+sum to decide on the size of the lower-dimensional representation.
 
 """
 
@@ -30,15 +33,19 @@ def principal_component_analysis_sklearn(data, n_components=1):
     """ PCA with SVD under the hood using sklearn library """
     data_std = StandardScaler().fit_transform(data)
 
+    # fit pca on data using sklearn
     pca = PCA(n_components=n_components)
     pca.fit(data_std)
 
+    # assign values from pca object
     variance_explained_ratio = pca.explained_variance_ratio_
     singular_values = pca.singular_values_
     principal_components = pca.components_
 
+    # apply transformation
     transformed_data = pca.fit_transform(data_std)
 
+    # return dictionary of items of interest
     return {'variance_explained_ratio': variance_explained_ratio,
             'singular_values': singular_values,
             'principal_components': principal_components,
@@ -61,6 +68,7 @@ def principal_component_analysis_numpy_svd(data):
     # apply transformation
     transformed_data = np.dot(u, np.diag(s))
 
+    # return dictionary of items of interest
     return {'variance_explained_ratio': variance_explained_ratio,
             'singular_values': s,
             'principal_components': vh,
