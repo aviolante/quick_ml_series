@@ -82,4 +82,3 @@ for i in weather_classes:
 # weather 1 - attendance probability: [[0.59 0.41]] , predicted attendance: 0
 # weather 2 - attendance probability: [[0.66 0.34]] , predicted attendance: 0
 # weather 3 - attendance probability: [[0.32 0.68]] , predicted attendance: 1
-
