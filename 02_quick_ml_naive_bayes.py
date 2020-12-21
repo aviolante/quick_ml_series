@@ -51,7 +51,7 @@ le_attend = preprocessing.LabelEncoder()
 
 # ordinal encoder for weather feature
 oe_weather.fit(np.array(globo_df_long['weather']).reshape(-1,1))
-weather = oe_weather.transform(np.array(globo_df_long['weather']).reshape(-1,1))
+weather = oe_weather.transform(np.array(globo_df_long['weather']).reshape(-1, 1))
 
 # label encoder for target
 le_attend.fit(globo_df_long['attended'])
@@ -70,7 +70,9 @@ clf = CategoricalNB()
 clf.fit(weather, attend_y)
 
 # predict and view any given weather value
-for i in range(4):
+weather_classes = np.unique(weather)
+
+for i in weather_classes:
     print("weather", i, "-",
           "attendance probability:", np.round(clf.predict_proba([[i]]), 2),
           ", predicted attendance:", clf.predict([[i]])[0])
@@ -80,3 +82,4 @@ for i in range(4):
 # weather 1 - attendance probability: [[0.59 0.41]] , predicted attendance: 0
 # weather 2 - attendance probability: [[0.66 0.34]] , predicted attendance: 0
 # weather 3 - attendance probability: [[0.32 0.68]] , predicted attendance: 1
+
