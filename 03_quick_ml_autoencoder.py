@@ -6,7 +6,7 @@ from keras.layers import Input, Dense
 from sklearn.manifold import TSNE
 import seaborn as sns
 
-# load data, UCI Data from https://archive.ics.uci.edu/ml/datasets/Bank+Marketing
+# load data
 bank_df = pd.read_csv('bank/bank-full.csv', delimiter=';')
 bank_df.head()
 
@@ -43,8 +43,7 @@ tf.keras.utils.plot_model(autoencoder,
                           show_shapes=True,
                           show_layer_activations=True)
 
-# get layer weights and use tf.matmul, matrix multiplication, to "score data" you could also use Model() and pass
-# the weights to the layers
+# get layer weights and use tf.matmul, matrix multiplication --> encoder Model() approach shown below
 embedding_matrix = autoencoder.get_layer('encoder').get_weights()[0]
 embed_encode_data = tf.matmul(bank_df_dummy, embedding_matrix)
 embedding_matrix = autoencoder.get_layer('bottleneck').get_weights()[0]
@@ -53,14 +52,45 @@ embed_encode_data = embed_encode_data.numpy()
 embed_encode_data_df = pd.DataFrame(embed_encode_data)
 
 # use t-sne to visualize and validate your autoencoder embedding or dense representation
-tsne_embedding = TSNE(n_components=2, learning_rate=75, perplexity=15, init='random').fit_transform(embed_encode_data_df)
+tsne_embedding = TSNE(n_components=2, learning_rate='auto', perplexity=30, init='random').fit_transform(embed_encode_data_df)
 
 bank_df['tsne_dim1'] = tsne_embedding[:, 0]
 bank_df['tsne_dim2'] = tsne_embedding[:, 1]
 
 # plot visual of t-sne embedding (its fun!)
-sns.scatterplot(x="tsne_dim1", y="tsne_dim2", hue='y',
-                palette=sns.color_palette("Set2", 2),
+sns.scatterplot(x="tsne_dim1", y="tsne_dim2",
+                palette=sns.color_palette(),
+                alpha=0.6,
                 data=bank_df).set(title="Bank Data T-SNE Projection")
 
 
+# ---------------------------------------------------------------------------------------------------------- #
+# same as above code just using Model() function
+# ---------------------------------------------------------------------------------------------------------- #
+
+# use weights from pretrained model to generate embedding using Model()
+encoder_weights = autoencoder.get_layer('encoder').get_weights()
+bottleneck_weights = autoencoder.get_layer('bottleneck').get_weights()
+
+# construct encoder model
+embed_input_layer = Input(shape=(input_dim,), name="input_layer")
+embed_encoder = Dense(units=encoding_dim * 2, weights=encoder_weights)(embed_input_layer)
+embed_bottleneck = Dense(units=encoding_dim, weights=bottleneck_weights)(embed_encoder)
+
+ae_embedding = Model(inputs=embed_input_layer, outputs=embed_bottleneck, name="ae_encoder")
+
+# score data
+embedding = ae_embedding.predict(bank_df_dummy)
+
+# use t-sne to visualize and validate your autoencoder embedding or dense representation
+tsne_embedding = TSNE(n_components=2, learning_rate='auto', perplexity=30, init='random').fit_transform(embedding)
+
+
+bank_df['tsne_dim1'] = tsne_embedding[:, 0]
+bank_df['tsne_dim2'] = tsne_embedding[:, 1]
+
+# plot visual of t-sne embedding (its fun!)
+sns.scatterplot(x="tsne_dim1", y="tsne_dim2",
+                palette=sns.color_palette(),
+                alpha=0.6,
+                data=bank_df).set(title="Bank Data T-SNE Projection")
